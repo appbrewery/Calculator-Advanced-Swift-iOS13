@@ -21,10 +21,17 @@ class ViewController: UIViewController {
             guard let number = Double(displayLabel.text!) else {
                 fatalError("Can't convert display label text to a Double")
             }
+            
             return number
         }
         set {
-            displayLabel.text = String(newValue)
+            if floor(newValue) == newValue {
+                let roundedNumber = Int(newValue)
+                displayLabel.text = String(roundedNumber)
+                print(roundedNumber)
+            } else {
+                displayLabel.text = String(newValue)
+            }
         }
     }
     
@@ -60,6 +67,7 @@ class ViewController: UIViewController {
         if let numValue = sender.currentTitle {
             
             if isFinishedTypingNumber {
+                storedValue = ""
                 displayLabel.text = numValue
                 storedValue.append(numValue)
                 isFinishedTypingNumber = false
