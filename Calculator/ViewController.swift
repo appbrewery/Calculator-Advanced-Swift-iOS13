@@ -16,6 +16,8 @@ class ViewController: UIViewController {
     
     private var isFinishedTypingNumber: Bool = true
     
+    private var intermediateCalculation: (num1: Double, calcMethod: String) = (num1: 0.0, calcMethod: "")
+    
     private var displayValue: Double {
         get {
             guard let number = Double(displayLabel.text!) else {
@@ -49,6 +51,19 @@ class ViewController: UIViewController {
                 storedValue = ""
             } else if calcMethod == "%" {
                 displayValue = displayValue/100
+            } else if calcMethod == "="
+                        && !(storedValue.contains("+/-")
+                                || storedValue.contains("AC")
+                                || storedValue.contains("%")
+                                || storedValue.contains("=")) {
+                if let safeResult = performCalculation(intermediateCalculation, displayValue) {
+                    displayValue = safeResult
+                } else {
+                    displayLabel.text = "Invalid Input"
+                }
+            } else {
+                intermediateCalculation = (num1: displayValue, calcMethod: calcMethod)
+                storedValue = ""
             }
         }
         
@@ -68,6 +83,7 @@ class ViewController: UIViewController {
             
             if isFinishedTypingNumber {
                 storedValue = ""
+                
                 displayLabel.text = numValue
                 storedValue.append(numValue)
                 isFinishedTypingNumber = false
@@ -79,6 +95,28 @@ class ViewController: UIViewController {
             
             
             
+        }
+        
+    }
+    
+    func performCalculation(_ intermediateCalc: (num1: Double, calcMethod: String), _ num2: Double) -> Double? {
+        
+        switch intermediateCalc.calcMethod {
+        
+        case "+":
+            return intermediateCalc.num1 + num2
+        case "-":
+            return intermediateCalc.num1 - num2
+        case "×":
+            return intermediateCalc.num1 * num2
+        case "÷":
+            if num2 != 0 {
+                return intermediateCalc.num1 / num2
+            } else {
+                return nil
+            }
+        default:
+            return nil
         }
         
     }
